@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import classNames from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -15,8 +15,10 @@ import { RootState, AppDispatch } from './app/store';
 import { setAuthor } from './features/author/authorSlice';
 import { setPosts, setLoaded, setHasError } from './features/posts/postsSlice';
 import { setSelectedPost } from './features/selectedPost/selectedPostSlice';
+import { setUsers } from './features/users/usersSlice';
 
 import { getUserPosts } from './api/posts';
+import { getUsers } from './api/users';
 import { User } from './types/User';
 
 export const App: React.FC = () => {
@@ -29,6 +31,16 @@ export const App: React.FC = () => {
   const selectedPost = useSelector(
     (state: RootState) => state.selectedPost.post,
   );
+
+  useEffect(() => {
+    getUsers()
+      .then(usersFromServer => {
+        dispatch(setUsers(usersFromServer));
+      })
+      .catch(() => {
+        ('Failed to load users');
+      });
+  }, [dispatch]);
 
   function loadUserPosts(userId: number) {
     dispatch(setLoaded(false));
